@@ -4,6 +4,12 @@ require_once '../config/function.php';
 if (!isset($_SESSION['userId'])) {
     header('Location: ../auth/login.php');
 }
+if (isset($_SESSION['userId'])) {
+    $userId = $_SESSION['userId'];
+    echo '<script>var userId = ' . json_encode($userId) . ';</script>';
+} else {
+    echo '<script>var userId = null;</script>';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -106,17 +112,10 @@ if (!isset($_SESSION['userId'])) {
 
                                 <div class="form-group row mb-1">
                                     <div class="col-md-12">
-                                        <label for="barangay" class="text-black">Barangay <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="barangay" name="barangay">
-                                    </div>
-                                </div>
-
-                                <div class="form-group row mb-1">
-                                    <div class="col-md-12">
-                                        <label for="city" class="text-black">City or Municipality <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="city" name="city">
+                                        <label for="city_municipality" class="text-black">City or
+                                            Municipality <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="city_municipality"
+                                            name="city_municipality">
                                     </div>
                                 </div>
 
@@ -127,9 +126,9 @@ if (!isset($_SESSION['userId'])) {
                                         <input type="text" class="form-control" id="province" name="province">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="postal_code" class="text-black">Postal / Zip <span
+                                        <label for="postal_zip" class="text-black">Postal / Zip <span
                                                 class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" id="postal_code" name="postal_code">
+                                        <input type="number" class="form-control" id="postal_zip" name="postal_zip">
                                     </div>
                                 </div>
 
@@ -140,9 +139,9 @@ if (!isset($_SESSION['userId'])) {
                                         <input type="email" class="form-control" id="email" name="email">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="phone" class="text-black">Phone <span
+                                        <label for="contact" class="text-black">Phone <span
                                                 class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" id="phone" name="phone">
+                                        <input type="number" class="form-control" id="contact" name="contact">
                                     </div>
                                 </div>
                             </div>
@@ -291,11 +290,37 @@ if (!isset($_SESSION['userId'])) {
     <script>
         $(document).ready(function () {
             displayCartData();
+            getUserProfile(userId);
         });
 
         $(window).on('beforeunload', function () {
             revertToCart();
         });
+        function getUserProfile(userId) {
+            $.ajax({
+                type: "POST",
+                url: "../config/request/getUserDetails.php",
+                dataType: "json",
+                data: {
+                    userId: userId
+                },
+                success: function (response) {
+                    var userDetails = response.data;
+
+                    $('#first_name').empty().val(userDetails[0].first_name);
+                    $('#last_name').empty().val(userDetails[0].last_name);
+                    $('#address').empty().val(userDetails[0].home);
+                    $('#city_municipality').empty().val(userDetails[0].city);
+                    $('#province').empty().val(userDetails[0].state);
+                    $('#postal_zip').empty().val(userDetails[0].postal);
+                    $('#email').empty().val(userDetails[0].email);
+                    $('#contact').empty().val(userDetails[0].contact_no);
+                },
+                error: function (error) {
+                    console.log("Error:", error);
+                },
+            });
+        }
     </script>
 </body>
 

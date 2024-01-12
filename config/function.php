@@ -60,7 +60,7 @@ function getUserDetails($userId)
     $sql = "SELECT users.id, users.first_name, users.last_name, users.email,
                    userdetails.home, userdetails.city, userdetails.state, userdetails.postal, userdetails.contact_no
             FROM users 
-            JOIN userdetails 
+            LEFT JOIN userdetails 
             ON users.id = userdetails.user_id 
             WHERE users.id = '$userId'";
 
@@ -87,55 +87,65 @@ function updatePassword($userId, $newPassword)
 {
     global $conn;
 
+    $userId = sanitize($userId);
     $newPassword = md5(sanitize($newPassword));
 
-    $sql = "UPDATE users 
-            SET 
-            password = '$newPassword'
-            WHERE id = '$userId'";
+    $checkUserSql = "SELECT COUNT(*) as count FROM users WHERE id = '$userId'";
+    $checkUserResult = $conn->query($checkUserSql);
+    $userExists = $checkUserResult->fetch_assoc()['count'] > 0;
 
-    $result = $conn->query($sql);
-
-    return $result;
+    if ($userExists) {
+        $updateSql = "UPDATE users SET password = '$newPassword' WHERE id = '$userId'";
+        $updateResult = $conn->query($updateSql);
+        return $updateResult;
+    } else {
+        $insertSql = "INSERT INTO users (id, password) VALUES ('$userId', '$newPassword')";
+        $insertResult = $conn->query($insertSql);
+        return $insertResult;
+    }
 }
+
 function updateUserDetails($userDetails)
 {
     global $conn;
 
     $userId = $userDetails['userId'];
-    $first_name = $userDetails['first_name'];
-    $last_name = $userDetails['last_name'];
-    $address = $userDetails['address'];
-    $city_municipality = $userDetails['city_municipality'];
-    $province = $userDetails['province'];
-    $postal_zip = $userDetails['postal_zip'];
-    $contact = $userDetails['contact'];
+    $first_name = sanitize($userDetails['first_name']);
+    $last_name = sanitize($userDetails['last_name']);
+    $address = sanitize($userDetails['address']);
+    $city_municipality = sanitize($userDetails['city_municipality']);
+    $province = sanitize($userDetails['province']);
+    $postal_zip = sanitize($userDetails['postal_zip']);
+    $contact = sanitize($userDetails['contact']);
 
-    $sqlName = "UPDATE users
-                SET 
-                first_name = '$first_name',
-                last_name = '$last_name'
-                WHERE id = '$userId'";
+    $checkDetailsSql = "SELECT COUNT(*) as count FROM userdetails WHERE user_id = '$userId'";
+    $checkDetailsResult = $conn->query($checkDetailsSql);
+    $detailsExist = $checkDetailsResult->fetch_assoc()['count'] > 0;
 
-    $updateName = $conn->query($sqlName);
+    $sqlName = "UPDATE users SET first_name = '$first_name', last_name = '$last_name' WHERE id = '$userId'";
+    $conn->query($sqlName);
 
-    $sqlAddress = "UPDATE userdetails
-                    SET 
-                    home = '$address',
-                    city = '$city_municipality',
-                    state = '$province',
-                    postal = '$postal_zip',
-                    contact_no = '$contact'
-                    WHERE user_id = '$userId'";
+    if ($detailsExist) {
+        $sqlAddress = "UPDATE userdetails SET home = '$address', city = '$city_municipality', state = '$province', postal = '$postal_zip', contact_no = '$contact' WHERE user_id = '$userId'";
+        $updateAddress = $conn->query($sqlAddress);
 
-    $updateAddress = $conn->query($sqlAddress);
-
-    if ($updateName && $updateAddress) {
-        return true;
+        if ($updateAddress) {
+            return true;
+        } else {
+            return false;
+        }
     } else {
-        return false;
+        $insertAddressSql = "INSERT INTO userdetails (user_id, home, city, state, postal, contact_no) VALUES ('$userId', '$address', '$city_municipality', '$province', '$postal_zip', '$contact')";
+        $insertAddressResult = $conn->query($insertAddressSql);
+
+        if ($insertAddressResult) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
+
 function getProducts()
 {
     global $conn;

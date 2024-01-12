@@ -9,12 +9,18 @@ function getProfileDetails(userId) {
         success: function (response) {
             var userDetails = response.data;
 
-            var fullName = `${userDetails[0].first_name} ${userDetails[0].last_name}`;
-            var fullAddress = `${userDetails[0].home} ${userDetails[0].city}, ${userDetails[0].state} (${userDetails[0].postal})`;
+            var fullName = `${userDetails[0].first_name || ''} ${userDetails[0].last_name || ''}`;
+
+            var home = userDetails[0].home || '';
+            var city = userDetails[0].city || '';
+            var state = userDetails[0].state || '';
+            var postal = userDetails[0].postal || '';
+
+            var fullAddress = `${home} ${city}, ${state} (${postal})`;
 
             $('#fullName').text(fullName);
-            $('#email').text(userDetails[0].email);
-            $('#phone').text(userDetails[0].contact_no);
+            $('#email').text(userDetails[0].email || 'N/A');
+            $('#phone').text(userDetails[0].contact_no || 'N/A');
             $('#address').text(fullAddress);
         },
         error: function (error) {

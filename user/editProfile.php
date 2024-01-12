@@ -4,6 +4,12 @@ require_once '../config/function.php';
 if (!isset($_SESSION['userId'])) {
     header('Location: ../auth/login.php');
 }
+if (isset($_SESSION['userId'])) {
+    $userId = $_SESSION['userId'];
+    echo '<script>var userId = ' . json_encode($userId) . ';</script>';
+} else {
+    echo '<script>var userId = null;</script>';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -221,7 +227,6 @@ if (!isset($_SESSION['userId'])) {
 
 <script>
     $(document).ready(function () {
-        var userId = <?php echo $_SESSION['userId'] ?>;
         getUserProfile(userId);
     });
 

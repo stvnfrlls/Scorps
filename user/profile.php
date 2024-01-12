@@ -4,6 +4,12 @@ require_once '../config/function.php';
 if (!isset($_SESSION['userId'])) {
   header('Location: ../auth/login.php');
 }
+if (isset($_SESSION['userId'])) {
+  $userId = $_SESSION['userId'];
+  echo '<script>var userId = ' . json_encode($userId) . ';</script>';
+} else {
+  echo '<script>var userId = null;</script>';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -98,7 +104,7 @@ if (!isset($_SESSION['userId'])) {
           <hr class="my-2">
           <div class="row">
             <div class="col-sm-12">
-              <button type="button" class="btn btn-primary" id="editButton">Edit</button>
+              <a href="editProfile.php" type="button" class="btn btn-primary" id="editButton">Edit</a>
             </div>
           </div>
         </div>
@@ -191,7 +197,6 @@ if (!isset($_SESSION['userId'])) {
 
 <script>
   $(document).ready(function () {
-    var userId = <?php echo $_SESSION['userId'] ?>;
     getProfileDetails(userId);
     getOrderHistory(userId);
   });

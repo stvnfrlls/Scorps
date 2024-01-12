@@ -1,7 +1,7 @@
 <?php
 require_once '../config/function.php';
 
-if (!isset($_SESSION['userId'])) {
+if (isset($_SESSION['userId'])) {
   header('Location: ../index.php');
 }
 ?>

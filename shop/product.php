@@ -1,5 +1,11 @@
 <?php
 require_once '../config/function.php';
+if (isset($_SESSION['userId'])) {
+    $userId = $_SESSION['userId'];
+    echo '<script>var userId = ' . json_encode($userId) . ';</script>';
+} else {
+    echo '<script>var userId = null;</script>';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -409,8 +415,6 @@ require_once '../config/function.php';
     <script src="../assets/js/products.js"></script>
     <script src="../assets/js/cart.js"></script>
     <script>
-        var userId = <?php echo json_encode($_SESSION['userId']); ?>;
-
         $(document).ready(function () {
             var urlParams = getUrlParameters();
             var productId = urlParams.product_id;

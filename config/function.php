@@ -16,7 +16,8 @@ function login_user($email, $password)
             JOIN roles 
             ON users.id = roles.user_id 
             WHERE 
-                email = '$email' AND 
+                email = '$email' 
+            AND 
                 password = '$hashedPassword'";
     $result = $conn->query($sql);
 
@@ -29,6 +30,38 @@ function login_user($email, $password)
         return $userData;
     } else {
         return null;
+    }
+}
+function add_user($userDetails)
+{
+    global $conn;
+
+    $first_name = sanitize($userDetails['first_name']);
+    $last_name = sanitize($userDetails['last_name']);
+    $email = sanitize($userDetails['email']);
+    $password = sanitize($userDetails['password']);
+
+    $hashedPassword = md5($password);
+
+    $sqlCheck = "SELECT COUNT(email) AS count FROM users WHERE email = '$email'";
+    $resultEmail = $conn->query($sqlCheck);
+    $emailExist = $resultEmail->fetch_assoc()['count'] > 0;
+
+    if (!$emailExist) {
+        $sqlRegister = "INSERT INTO users (first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$hashedPassword')";
+        $resultRegister = $conn->query($sqlRegister);
+
+        if ($resultRegister) {
+            $userId = $conn->insert_id;
+            $sqlRole = "INSERT INTO roles (user_id, role) VALUES ('$userId', 'CUSTOMER')";
+            $conn->query($sqlRole);
+
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
     }
 }
 function verifyChange($userId, $password)

@@ -12,7 +12,7 @@ if (isset($_SESSION['userId'])) {
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Login - Sign Up</title>
+  <title>Login</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -43,7 +43,7 @@ if (isset($_SESSION['userId'])) {
               <button type="button" onclick="login()">Login</button>
               <p class="signup">
                 Don't have an account ?
-                <a href="#" onclick="toggleForm();">Sign Up.</a>
+                <a role="button" onclick="toggleForm();">Sign Up.</a>
               </p>
               <p class="forget-password">
                 <a href="reset-password.php">Forget Password </a>
@@ -55,15 +55,18 @@ if (isset($_SESSION['userId'])) {
           <div class="formBx">
             <form>
               <h2>Create an account</h2>
-              <input type="text" name="fname" placeholder="First Name" />
-              <input type="text" name="lname" placeholder="Last Name" />
-              <input type="email" name="email" placeholder="Email Address" />
-              <input type="password" name="password" placeholder="Create Password" />
-              <input type="password" name="cpassword" placeholder="Confirm Password" />
-              <button type="button">Sign up</button>
+              <div id="SignUpresponse">
+              </div>
+              <input type="text" name="firstnameSignUp" id="firstnameSignUp" placeholder="First Name" required />
+              <input type="text" name="lastnameSignUp" id="lastnameSignUp" placeholder="Last Name" required />
+              <input type="email" name="emailSignUp" id="emailSignUp" placeholder="Email Address" required />
+              <input type="password" name="passwordSignUp" id="passwordSignUp" placeholder="Create Password" required />
+              <input type="password" name="cpasswordSignUp" id="cpasswordSignUp" placeholder="Confirm Password"
+                required />
+              <button type="button" onclick="register()">Sign up</button>
               <p class="signup">
                 Already have an account ?
-                <a href="#" onclick="toggleForm();">Sign in.</a>
+                <a role="button" onclick="toggleForm();">Sign in.</a>
               </p>
             </form>
           </div>
